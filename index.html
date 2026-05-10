@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard · Avances Alfalfares</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --verde:    #2d6a4f;
+      --verde-cl: #52b788;
+      --verde-xl: #b7e4c7;
+      --tierra:   #a98467;
+      --tierra-cl:#ddb892;
+      --crema:    #f8f4ef;
+      --carbon:   #1a1a1a;
+      --gris:     #6b6b6b;
+      --gris-cl:  #e8e4df;
+      --blanco:   #ffffff;
+      --sombra:   0 2px 20px rgba(26,26,26,.08);
+      --radio:    12px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--crema);
+      color: var(--carbon);
+      min-height: 100vh;
+    }
+
+    /* ───── HEADER ───── */
+    header {
+      background: var(--verde);
+      color: var(--blanco);
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 72px;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,.18);
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .header-icon {
+      width: 40px; height: 40px;
+      background: var(--verde-cl);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px;
+      letter-spacing: 2px;
+      line-height: 1;
+    }
+    header p { font-size: 12px; opacity: .72; letter-spacing: .5px; }
+    .badge {
+      background: var(--verde-cl);
+      color: var(--verde);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+      letter-spacing: 1px;
+    }
+
+    /* ───── MAIN ───── */
+    main { max-width: 1100px; margin: 0 auto; padding: 36px 24px 60px; }
+
+    /* ───── SECTION TITLE ───── */
+    .sec-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--gris);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      padding-left: 2px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .sec-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--gris-cl);
+    }
+
+    /* ───── KPI GRID ───── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+    .kpi-card {
+      background: var(--blanco);
+      border-radius: var(--radio);
+      padding: 24px;
+      box-shadow: var(--sombra);
+      border-left: 4px solid var(--verde-cl);
+      animation: fadeUp .5s ease both;
+    }
+    .kpi-card:nth-child(2) { border-left-color: var(--tierra-cl); animation-delay:.1s }
+    .kpi-card:nth-child(3) { border-left-color: var(--verde);     animation-delay:.2s }
+    .kpi-card:nth-child(4) { border-left-color: var(--tierra);    animation-delay:.3s }
+    .kpi-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--gris); }
+    .kpi-value { font-family: 'Bebas Neue', sans-serif; font-size: 42px; color: var(--verde); line-height: 1.1; margin: 6px 0 2px; }
+    .kpi-card:nth-child(2) .kpi-value { color: var(--tierra); }
+    .kpi-sub   { font-size: 12px; color: var(--gris); }
+
+    /* ───── PROGRESS BAR ───── */
+    .progress-section {
+      background: var(--blanco);
+      border-radius: var(--radio);
+      padding: 28px;
+      box-shadow: var(--sombra);
+      margin-bottom: 36px;
+      animation: fadeUp .5s .35s ease both;
+    }
+    .progress-title { font-weight: 600; margin-bottom: 20px; font-size: 15px; }
+    .prog-row { margin-bottom: 18px; }
+    .prog-header { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; }
+    .prog-name { font-weight: 500; }
+    .prog-pct  { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--gris); }
+    .prog-bar-bg {
+      height: 8px; background: var(--gris-cl); border-radius: 99px; overflow: hidden;
+    }
+    .prog-bar-fill {
+      height: 100%; border-radius: 99px;
+      background: linear-gradient(90deg, var(--verde), var(--verde-cl));
+      transition: width 1.2s cubic-bezier(.22,1,.36,1);
+      width: 0;
+    }
+    .prog-bar-fill.tierra {
+      background: linear-gradient(90deg, var(--tierra), var(--tierra-cl));
+    }
+
+    /* ───── TIMELINE ───── */
+    .timeline-section {
+      background: var(--blanco);
+      border-radius: var(--radio);
+      padding: 28px;
+      box-shadow: var(--sombra);
+      margin-bottom: 36px;
+      animation: fadeUp .5s .4s ease both;
+    }
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: '';
+      position: absolute; left: 8px; top: 0; bottom: 0;
+      width: 2px; background: var(--gris-cl);
+    }
+    .tl-item {
+      position: relative; margin-bottom: 22px;
+    }
+    .tl-dot {
+      position: absolute; left: -24px; top: 4px;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--verde-cl);
+      border: 2px solid var(--verde);
+    }
+    .tl-dot.pendiente { background: var(--tierra-cl); border-color: var(--tierra); }
+    .tl-mes {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 11px; letter-spacing: 2px;
+      color: var(--gris); text-transform: uppercase; margin-bottom: 4px;
+    }
+    .tl-text { font-size: 13.5px; line-height: 1.6; }
+    .tl-tag {
+      display: inline-block;
+      background: var(--verde-xl);
+      color: var(--verde);
+      font-size: 10px; font-weight: 600;
+      padding: 2px 8px; border-radius: 20px;
+      margin-top: 4px; letter-spacing: .5px;
+    }
+    .tl-tag.warn { background: #fde8cc; color: #8b5e3c; }
+
+    /* ───── TABLA DE INFORMES ───── */
+    .table-section {
+      background: var(--blanco);
+      border-radius: var(--radio);
+      padding: 28px;
+      box-shadow: var(--sombra);
+      overflow-x: auto;
+      animation: fadeUp .5s .45s ease both;
+    }
+    table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    thead th {
+      text-align: left; padding: 10px 14px;
+      background: var(--verde); color: var(--blanco);
+      font-weight: 600; font-size: 11px; letter-spacing: .8px; text-transform: uppercase;
+    }
+    thead th:first-child { border-radius: 8px 0 0 0; }
+    thead th:last-child  { border-radius: 0 8px 0 0; }
+    tbody tr { border-bottom: 1px solid var(--gris-cl); transition: background .15s; }
+    tbody tr:hover { background: var(--crema); }
+    tbody td { padding: 12px 14px; vertical-align: top; line-height: 1.5; }
+    tbody td:first-child { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gris); white-space: nowrap; }
+    .chip {
+      display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 10px; font-weight: 600;
+    }
+    .chip.ok  { background: var(--verde-xl);  color: var(--verde); }
+    .chip.pend{ background: #fde8cc; color: #8b5e3c; }
+    .chip.rev { background: #e8e4df; color: #5a5a5a; }
+
+    /* ───── FOOTER ───── */
+    footer {
+      text-align: center; padding: 24px;
+      font-size: 12px; color: var(--gris);
+      border-top: 1px solid var(--gris-cl);
+      margin-top: 20px;
+    }
+
+    /* ───── ANIMATIONS ───── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ───── RESPONSIVE ───── */
+    @media (max-width: 600px) {
+      header { padding: 0 18px; }
+      main   { padding: 24px 14px 48px; }
+      .kpi-value { font-size: 32px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="header-icon">🌿</div>
+    <div>
+      <h1>Avances Alfalfares</h1>
+      <p>MDSA · Gestión de Proyectos de Inversión · Setiembre 2025</p>
+    </div>
+  </div>
+  <span class="badge">SET 2025</span>
+</header>
+
+<main>
+
+  <!-- KPI CARDS -->
+  <div class="sec-title">Resumen ejecutivo</div>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">Informes emitidos</div>
+      <div class="kpi-value">4</div>
+      <div class="kpi-sub">N°034-2025-MDSA</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Pendientes de confirmar</div>
+      <div class="kpi-value">1</div>
+      <div class="kpi-sub">Orden de Diseño Hidráulico</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Componentes en avance</div>
+      <div class="kpi-value">3</div>
+      <div class="kpi-sub">Socialización · Adenda · Diseño</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Periodo de reporte</div>
+      <div class="kpi-value" style="font-size:28px; color:var(--tierra)">15 SET</div>
+      <div class="kpi-sub">Fecha clave: 15 de setiembre 2025</div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="sec-title">Estado de componentes</div>
+  <div class="progress-section">
+    <div class="progress-title">Avance por componente del proyecto</div>
+
+    <div class="prog-row">
+      <div class="prog-header">
+        <span class="prog-name">Socialización de Proyectos de Inversión</span>
+        <span class="prog-pct">Requerimiento emitido</span>
+      </div>
+      <div class="prog-bar-bg"><div class="prog-bar-fill" data-w="75"></div></div>
+    </div>
+
+    <div class="prog-row">
+      <div class="prog-header">
+        <span class="prog-name">Adenda al Contrato de Personal</span>
+        <span class="prog-pct">Solicitud enviada</span>
+      </div>
+      <div class="prog-bar-bg"><div class="prog-bar-fill" data-w="60"></div></div>
+    </div>
+
+    <div class="prog-row">
+      <div class="prog-header">
+        <span class="prog-name">Diseño Hidráulico</span>
+        <span class="prog-pct">Requerimiento + avance (pendiente orden)</span>
+      </div>
+      <div class="prog-bar-bg"><div class="prog-bar-fill tierra" data-w="45"></div></div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="sec-title">Línea de tiempo · Setiembre 2025</div>
+  <div class="timeline-section">
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-mes">Setiembre · Inicio de mes</div>
+        <div class="tl-text">
+          Mediante Informe N°034-2025-MDSA/GM/GESLP/SED/RP-EDVC-GD654 se remite
+          <strong>Requerimiento de Servicio de Socialización de Proyectos de Inversión</strong>.
+        </div>
+        <span class="tl-tag">✔ Emitido</span>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-mes">Setiembre · Seguimiento</div>
+        <div class="tl-text">
+          Mediante Informe N°034-2025-MDSA/GM/GESLP/SED/RP-EDVC-GD654 se remite
+          <strong>Solicitud de Adenda al Contrato de Personal</strong>.
+        </div>
+        <span class="tl-tag">✔ Emitido</span>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-mes">Setiembre · Componente técnico</div>
+        <div class="tl-text">
+          Mediante Informe N°034-2025-MDSA/GM/GESLP/SED/RP-EDVC-GD654 se remite
+          <strong>Requerimiento de Servicio del Diseño Hidráulico</strong>.
+        </div>
+        <span class="tl-tag">✔ Emitido</span>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot pendiente"></div>
+        <div class="tl-mes">15 de Setiembre · Avance de campo</div>
+        <div class="tl-text">
+          Avance del Requerimiento de Servicio del Diseño Hidráulico registrado con fecha
+          <strong>15 de setiembre</strong>. Se necesita confirmar si cuenta con orden de servicio.
+        </div>
+        <span class="tl-tag warn">⏳ Pendiente confirmación de orden</span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TABLA DE INFORMES -->
+  <div class="sec-title">Registro de informes</div>
+  <div class="table-section">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>N° de Informe</th>
+          <th>Asunto</th>
+          <th>Fecha</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>01</td>
+          <td>034-2025-MDSA/GM/GESLP/SED/RP-EDVC-GD654</td>
+          <td>Requerimiento de Servicio de Socialización de Proyectos de Inversión</td>
+          <td>Set. 2025</td>
+          <td><span class="chip ok">Emitido</span></td>
+        </tr>
+        <tr>
+          <td>02</td>
+          <td>034-2025-MDSA/GM/GESLP/SED/RP-EDVC-GD654</td>
+          <td>Solicitud de Adenda al Contrato de Personal</td>
+          <td>Set. 2025</td>
+          <td><span class="chip ok">Emitido</span></td>
+        </tr>
+        <tr>
+          <td>03</td>
+          <td>034-2025-MDSA/GM/GESLP/SED/RP-EDVC-GD654</td>
+          <td>Requerimiento de Servicio del Diseño Hidráulico</td>
+          <td>Set. 2025</td>
+          <td><span class="chip ok">Emitido</span></td>
+        </tr>
+        <tr>
+          <td>04</td>
+          <td>034-2025-MDSA/GM/GESLP/SED/RP-EDVC-GD654</td>
+          <td>Avance del Requerimiento de Servicio del Diseño Hidráulico (15 Set.)</td>
+          <td>15 Set. 2025</td>
+          <td><span class="chip pend">Pendiente orden</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<footer>
+  Municipalidad Distrital de San Antonio (MDSA) · Gerencia de Estudios y Liquidación de Proyectos (GESLP) · Generado automáticamente
+</footer>
+
+<script>
+  // Animate progress bars after load
+  window.addEventListener('load', () => {
+    document.querySelectorAll('.prog-bar-fill').forEach(bar => {
+      const w = bar.dataset.w;
+      setTimeout(() => { bar.style.width = w + '%'; }, 300);
+    });
+  });
+</script>
+
+</body>
+</html>
