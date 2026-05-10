@@ -229,9 +229,93 @@
       main   { padding: 24px 14px 48px; }
       .kpi-value { font-size: 32px; }
     }
+
+    /* ───── MODAL CONTRASEÑA ───── */
+    #lock-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: linear-gradient(135deg, #1a3a2a 0%, #2d6a4f 60%, #1a2a1a 100%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    #lock-overlay.hidden { display: none; }
+    .lock-box {
+      background: #fff;
+      border-radius: 20px;
+      padding: 48px 40px 40px;
+      width: 360px;
+      max-width: 90vw;
+      text-align: center;
+      box-shadow: 0 24px 60px rgba(0,0,0,.35);
+      animation: popIn .4s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    @keyframes popIn {
+      from { opacity:0; transform: scale(.85) translateY(20px); }
+      to   { opacity:1; transform: scale(1)   translateY(0); }
+    }
+    .lock-icon { font-size: 48px; margin-bottom: 16px; animation: swing 2s ease-in-out infinite; }
+    @keyframes swing {
+      0%,100% { transform: rotate(-8deg); }
+      50%      { transform: rotate(8deg); }
+    }
+    .lock-box h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px; letter-spacing: 2px;
+      color: #2d6a4f; margin-bottom: 4px;
+    }
+    .lock-box p { font-size: 12px; color: #6b6b6b; margin-bottom: 28px; }
+    #pw-input {
+      width: 100%; padding: 13px 18px;
+      border: 2px solid #e8e4df; border-radius: 10px;
+      font-size: 15px; font-family: 'DM Mono', monospace;
+      letter-spacing: 4px; text-align: center;
+      outline: none; transition: border-color .2s, box-shadow .2s;
+      color: #1a1a1a; background: #f8f4ef;
+    }
+    #pw-input:focus {
+      border-color: #52b788;
+      box-shadow: 0 0 0 3px rgba(82,183,136,.18);
+      background: #fff;
+    }
+    #pw-input.error {
+      border-color: #e07070;
+      box-shadow: 0 0 0 3px rgba(224,112,112,.15);
+      animation: shake .35s ease;
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-8px); }
+      40%      { transform: translateX(8px); }
+      60%      { transform: translateX(-5px); }
+      80%      { transform: translateX(5px); }
+    }
+    #pw-btn {
+      margin-top: 16px; width: 100%; padding: 13px;
+      background: #2d6a4f; color: #fff; border: none; border-radius: 10px;
+      font-size: 14px; font-weight: 600; letter-spacing: 1.5px;
+      text-transform: uppercase; cursor: pointer;
+      transition: background .2s, transform .1s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    #pw-btn:hover  { background: #52b788; }
+    #pw-btn:active { transform: scale(.97); }
+    #pw-error { margin-top: 12px; font-size: 12px; color: #c0392b; min-height: 16px; font-weight: 600; }
+    body.locked { overflow: hidden; }
   </style>
 </head>
-<body>
+<body class="locked">
+
+<!-- ── MODAL CONTRASEÑA ── -->
+<div id="lock-overlay">
+  <div class="lock-box">
+    <div class="lock-icon">🔒</div>
+    <h2>Acceso Restringido</h2>
+    <p>Ingresa la clave para ver el dashboard</p>
+    <input id="pw-input" type="password" placeholder="••••••••"
+           autocomplete="off" autofocus maxlength="20"/>
+    <button id="pw-btn" onclick="checkPw()">Ingresar</button>
+    <div id="pw-error"></div>
+  </div>
+</div>
+
 
 <header>
   <div class="header-left">
@@ -402,13 +486,30 @@
 </footer>
 
 <script>
-  // Animate progress bars after load
-  window.addEventListener('load', () => {
-    document.querySelectorAll('.prog-bar-fill').forEach(bar => {
-      const w = bar.dataset.w;
-      setTimeout(() => { bar.style.width = w + '%'; }, 300);
-    });
+
+  // ── Contraseña de acceso ──
+  function checkPw() {
+    const val = document.getElementById('pw-input').value;
+    const inp = document.getElementById('pw-input');
+    const err = document.getElementById('pw-error');
+    if (val === 'CLAUDIA') {
+      document.getElementById('lock-overlay').classList.add('hidden');
+      document.body.classList.remove('locked');
+      // Trigger progress bars
+      document.querySelectorAll('.prog-bar-fill').forEach(bar => {
+        setTimeout(() => { bar.style.width = bar.dataset.w + '%'; }, 300);
+      });
+    } else {
+      inp.classList.add('error');
+      err.textContent = 'Clave incorrecta. Intenta nuevamente.';
+      inp.value = '';
+      setTimeout(() => inp.classList.remove('error'), 400);
+    }
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkPw();
   });
+
 </script>
 
 </body>
